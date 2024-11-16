@@ -79,7 +79,7 @@ def create_user(
 
 
 @router.get("/users", response_model=List[schemas.UserOut])
-def get_all_users(db: Session = Depends(database.get_db), current_user: models.User = Depends(admin_required)):
+def get_all_users(db: Session = Depends(database.get_db)):
     users = db.query(models.User).all()
 
     if not users:
@@ -100,7 +100,7 @@ def get_all_users(db: Session = Depends(database.get_db), current_user: models.U
     return user_list
 
 @router.get("/users/{user_id}", response_model=schemas.UserOut)
-def get_user_by_id(user_id: int, db: Session = Depends(database.get_db), current_user: models.User = Depends(admin_required)):
+def get_user_by_id(user_id: int, db: Session = Depends(database.get_db)):
     user = db.query(models.User).filter(models.User.user_id == user_id).first()
     
     if not user:
