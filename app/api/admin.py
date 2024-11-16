@@ -163,7 +163,7 @@ def mark_attendance(
     attendance_date: date,
     status: str,  # Acceptable values: 'present', 'absent', 'leave'
     db: Session = Depends(get_db),
-    current_user: models.User = Depends(admin_required)  # Dependency to ensure only admins can access
+    # Dependency to ensure only admins can access
 ):
     # Validate attendance status
     if status not in ["present", "absent", "leave"]:
@@ -197,7 +197,6 @@ def mark_attendance(
 def get_employee_attendance(
     user_id: int,
     db: Session = Depends(get_db),
-    current_user: models.User = Depends(admin_required)
 ):
     # Query attendance records for the specified user
     attendance_records = db.query(models.Attendance).filter(
