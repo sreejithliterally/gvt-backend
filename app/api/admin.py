@@ -247,3 +247,41 @@ def get_pending_leave_requests(
         }
         for record in pending
     ]
+
+
+@router.get("/leave-details/{leave_id}", response_model=schemas.LeaveRequestPendingResponse)
+def get_leave_details(
+    leave_id: int,
+    db: Session = Depends(get_db)
+):
+    # Query for the specific leave application and user details
+    leave_details = (
+        db.query(
+            models.LeaveApplication.leave_id,
+            models.LeaveApplication.leave_date,
+            models.LeaveApplication.reason,
+            models.LeaveApplication.status,
+            models.LeaveApplication.created_at,
+            models.User.user_id,
+            models.User.first_name,
+            models.User.last_name
+        )
+        .join(models.User, models.LeaveApplication.user_id == models.User.user_id)
+        .filter(models.LeaveApplication.leave_id == leave_id)
+        .first()
+    )
+
+    if not leave_details:
+        raise HTTPException(status_code=404, detail="Leave application not found")
+
+    # Return the details in the expected format
+    return {
+        "leave_id": leave_details.leave_id,
+        "leave_date": leave_details.leave_date,
+        "reason": leave_details.reason,
+        "status": leave_details.status,
+        "created_at": leave_details.created_at,
+        "user_id": leave_details.user_id,
+        "first_name": leave_details.first_name,
+        "last_name": leave_details.last_name,
+    }
