@@ -20,6 +20,6 @@ class Settings(BaseSettings):
 
 
     class Config:
-        env_file = Path("/Users/sreejiths/works/gvt-backend/.env")
+        env_file = Path("/home/ubuntu/gvt-backend/.env")
 
-settings = Settings(_env_file=Path("/Users/sreejiths/works/gvt-backend/.env"), _env_file_encoding="utf-8")
+settings = Settings(_env_file=Path("/home/ubuntu/gvt-backend/.env"), _env_file_encoding="utf-8")
