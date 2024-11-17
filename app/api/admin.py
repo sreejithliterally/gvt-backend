@@ -209,3 +209,41 @@ def get_employee_attendance(
     return attendance_records
 
 
+@router.get("/leave-requests-pending/", response_model=List[schemas.LeaveRequestPendingResponse])
+def get_pending_leave_requests(
+    db: Session = Depends(get_db)
+):
+    # Query for pending leave applications along with user details
+    pending = (
+        db.query(
+            models.LeaveApplication.leave_id,
+            models.LeaveApplication.user_id,
+            models.LeaveApplication.leave_date,
+            models.LeaveApplication.reason,
+            models.LeaveApplication.status,
+            models.LeaveApplication.created_at,
+            models.User.first_name,
+            models.User.last_name
+        )
+        .join(models.User, models.LeaveApplication.user_id == models.User.user_id)
+        .filter(models.LeaveApplication.status == 'pending')
+        .all()
+    )
+
+    if not pending:
+        raise HTTPException(status_code=404, detail="No pending leave applications found")
+
+    # Convert query result to list of dictionaries
+    return [
+        {
+            "leave_id": record.leave_id,
+            "user_id": record.user_id,
+            "leave_date": record.leave_date,
+            "reason": record.reason,
+            "status": record.status,
+            "created_at": record.created_at,
+            "first_name": record.first_name,
+            "last_name": record.last_name,
+        }
+        for record in pending
+    ]

@@ -100,3 +100,16 @@ class AttendanceResponse(AttendanceBase):
 
     class Config:
         orm_mode = True
+
+class LeaveRequestPendingResponse(BaseModel):
+    leave_id: int
+    user_id: int
+    leave_date: date
+    reason: Optional[str]
+    status: str
+    created_at: datetime
+    first_name: str
+    last_name: Optional[str]
+
+    class Config:
+        orm_mode = True
