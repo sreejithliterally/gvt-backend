@@ -113,3 +113,7 @@ class LeaveRequestPendingResponse(BaseModel):
 
     class Config:
         orm_mode = True
+
+class LeaveStatusUpdate(BaseModel):
+    status: str  # Expected values: "approved" or "rejected"
+

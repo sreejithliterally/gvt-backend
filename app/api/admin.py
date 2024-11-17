@@ -285,3 +285,37 @@ def get_leave_details(
         "first_name": leave_details.first_name,
         "last_name": leave_details.last_name,
     }
+
+
+@router.put("/leave-requests/{leave_id}/status")
+def update_leave_status(
+    leave_id: int,
+    status_update: schemas.LeaveStatusUpdate,
+    db: Session = Depends(get_db)
+):
+    # Validate the status value
+    if status_update.status not in ["approved", "rejected"]:
+        raise HTTPException(
+            status_code=400, detail="Invalid status. Choose 'approved' or 'rejected'."
+        )
+
+    # Fetch the leave application by ID
+    leave_request = db.query(models.LeaveApplication).filter(
+        models.LeaveApplication.leave_id == leave_id
+    ).first()
+
+    if not leave_request:
+        raise HTTPException(
+            status_code=404, detail="Leave application not found"
+        )
+
+    # Update the status
+    leave_request.status = status_update.status
+    db.commit()
+    db.refresh(leave_request)
+
+    return {
+        "leave_id": leave_request.leave_id,
+        "status": leave_request.status,
+        "message": f"Leave request has been {leave_request.status}.",
+    }
