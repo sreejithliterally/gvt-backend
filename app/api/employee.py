@@ -39,3 +39,24 @@ def apply_leave(leave_date: date, reason: str, db: Session = Depends(get_db), cu
     db.refresh(leave_application)
 
     return leave_application
+
+
+
+@router.get("/leave-status/", response_model=List[schemas.LeaveApplicationResponse])
+def view_leave_status(
+    db: Session = Depends(get_db),
+    current_user: models.User = Depends(get_current_user),
+    start_date: date = Query(None),
+    end_date: date = Query(None)
+):
+    """
+    View the leave application status for the logged-in user. 
+    Optionally, filter by date range.
+    """
+    # Base query to fetch leave applications for the current user
+    query = db.query(models.LeaveApplication).filter(
+        models.LeaveApplication.user_id == current_user.user_id
+    )
+    
+    leave_applications = query.all()
+    return leave_applications
